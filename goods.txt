@@ -1,0 +1,6 @@
+apple	102	2
+watch	350	39
+pear	800	1
+melon	227	3
+mouse	333	7
+beef	379	20

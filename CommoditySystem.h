@@ -6,7 +6,6 @@
 
 
 #include <math.h>
-#include <windows.h>
 #include <conio.h>
 #include "UserSystem.h"
 
@@ -25,6 +24,9 @@ typedef struct shop {
     struct shop*next;
 } SHOP;
 
+
+
+
 void Windowstime();
 void inputInformation();
 void inputDate();
@@ -38,5 +40,5 @@ void findInformation();
 void amendInformation();
 void delInformation();
 void sortInformation();
-void findOrderInformation(userInf);
+void findOrderInformation(userInf,SHOP*head);
 void CommodityMenu(userInf);

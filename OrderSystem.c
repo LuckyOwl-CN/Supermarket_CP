@@ -9,7 +9,7 @@ int order_NumOfProduct = 0;
 int order_GoodsInOrder[20] = {0}; //表示不同用户的订单个数
 int order_Position = -1;     //登录成功者在结构体中的位置
 
-int userLoad(userInf user[]){
+/*int userLoad(userInf user[]){
 
     char account[20];
     char password[20];
@@ -34,57 +34,63 @@ int userLoad(userInf user[]){
 
     return -1;
 
-}
+}*/
 
 void userWrite(userInf user[]){
+	
 
+	FILE *fp = fopen("user.txt","w+");
+		if(fp==NULL)
+	{
+		printf("打开文件失败\n");
+	 } 
+	 fflush(stdin);
+	 int i = 0;
 
-    FILE *fp = fopen("user.txt","w+");
-    if(fp==NULL)
-    {
-        printf("打开文件失败\n");
-    }
-    fflush(stdin);
-    int i = 0;
+	 for(i = 0;i < order_NumOfUser;i++){
+	 	
+	 	fprintf(fp,"%s\t%s\t%d\n",user[i].userAccount,user[i].userPassword,
+		 					  user[i].userPermission);
+	 	
+	 	
+	 }
 
-    for(i = 0;i < order_NumOfUser;i++){
-
-        fprintf(fp,"%s\t%s\t%d\n",user[i].userAccount,user[i].userPassword,
-                user[i].userPermission);
-
-
-    }
-
-    fclose(fp);
-    printf("写入 %d 条记录到文件%s\n\n", order_NumOfUser, "user.txt");
-
-
+	fclose(fp);
+	printf("写入 %d 条记录到文件%s\n\n", order_NumOfUser, "user.txt");
+	
+	
 }
 
-void userRegister(userInf user[]){
+void addUser(userInf user[],userInf newuser){
 
-    printf("请设置账号 : ");
+    
     char account[20];
-    scanf("%s",account);
-    fflush(stdin);
-    strcpy(user[order_NumOfUser].userAccount,account);
-
-    printf("请设置密码 : ");
     char password[20];
-    scanf("%s",password);
-    fflush(stdin);
-    strcpy(user[order_NumOfUser].userPassword,password);
-
-    printf("请设置身份 1用户 2管理员 3超管 ： ");
-    int permission;
-    scanf("%d",&permission);
-    fflush(stdin);
-    user[order_NumOfUser].userPermission = permission;
-    order_NumOfUser++;
-    userWrite(user);
-
-    printf("您已经注册成功，请登录\n");
-
+    int i = 0;
+    int flag = -1;
+    for(i = 0;i < order_NumOfUser;i++){
+    	
+    	if((strcmp(user[i].userAccount,newuser.userAccount) == 0)&&(strcmp(user[i].userPassword,newuser.userPassword) == 0))  {
+    		
+    		flag = i;
+    		order_Position = i;
+    		printf("之前已经存过信息了，无需再次另存\n");
+    		break;
+    		
+		}
+    	
+	}
+	if(flag == -1){
+		
+		strcpy(user[order_NumOfUser].userAccount,newuser.userAccount); 
+   		strcpy(user[order_NumOfUser].userPassword,newuser.userPassword);
+   	 	user[order_NumOfUser].userPermission = newuser.userPermission;
+    	order_NumOfUser++;
+    	order_Position = order_NumOfUser - 1;
+    	userWrite(user);
+    	printf("添加成功，你现在可以实现功能\n");
+		
+	}
 
 }
 
@@ -99,8 +105,8 @@ void goodsWrite(goods good[]){
     int i = 0;
     for(i = 0;i < order_NumOfProduct;i++){
 
-        fprintf(fp,"%s\t%d\t%d\n",good[i].name,good[i].num,
-                good[i].price);
+        fprintf(fp,"%s\t%d\t%d\t%s\n",good[i].name,good[i].num,
+                good[i].price,good[i].date);
 
     }
 
@@ -110,7 +116,7 @@ void goodsWrite(goods good[]){
 }
 
 
-void addGoods(goods good[]){
+/*void addGoods(goods good[]){
 
     char name[20];
     int num;
@@ -164,7 +170,7 @@ void addGoods(goods good[]){
 
 
 
-}
+}*/
 
 void orderWrite(userInf user[]){
 
@@ -396,45 +402,93 @@ void deleteSingleOrder(goods good[],userInf user[]){
 
 }
 
-void showOrderByUserName(userInf user[],goods good[]){
+void CountTotalPrice(userInf user[],goods good[],userInf newuser){
 
     int i = 0;
     int j = 0;
     int count = -1;
-    while(1){
+    int num = newuser.userPermission;
+    if(num == 3){
+    	
+    	num = 2;
+    	
+	}
+	switch(num){
+		
+		case 1:
+			while(1){
 
-        printf("请输入该用户的账号：");
-        char account[20];
-        scanf("%s",account);
-        fflush(stdin);
-        printf("请输入该用户的密码：");
-        char password[20];
-        scanf("%s",password);
-        fflush(stdin);
-        for(i = 0;i < order_NumOfUser ;i ++){
+ 
+       			char account[20];
+       			strcpy(account,newuser.userAccount);
+        		fflush(stdin);
 
-            if((strcmp(account,user[i].userAccount) == 0) &&(strcmp(password,user[i].userPassword)==0)){
+        		char password[20];
+        		strcpy(password,newuser.userPassword);
+        		fflush(stdin);
+        		for(i = 0;i < order_NumOfUser ;i ++){
 
-                count = i;
-                break;
+           		 if((strcmp(account,user[i].userAccount) == 0) &&(strcmp(password,user[i].userPassword)==0)){
 
-            }
+               		 count = i;
+               		 break;
 
-        }
+           		 }
 
-        if(count != -1){
+       			}
 
-            printf("查找成功\n");
-            break;
-        }
-        else{
 
-            printf("查找失败\n");
-            break;
+				if(count != -1){
 
-        }
+           			 printf("查找成功\n");
+            			break;
+        			}
+        			else{
 
-    }
+            			printf("查找失败\n");
+            			break;
+
+        			}
+    		}
+    		break;
+    		case 2:
+    			while(1){
+
+        			printf("请输入该用户的账号：");
+        			char account[20];
+        			scanf("%s",account);
+        			fflush(stdin);
+        			printf("请输入该用户的密码：");
+        			char password[20];
+        			scanf("%s",password);
+        			fflush(stdin);
+        			for(i = 0;i < order_NumOfUser ;i ++){
+
+        			    if((strcmp(account,user[i].userAccount) == 0) &&(strcmp(password,user[i].userPassword)==0)){
+
+               			 count = i;
+               			 break;
+
+           			}
+
+        			}
+
+        			if(count != -1){
+
+           			 printf("查找成功\n");
+            			break;
+        			}
+        			else{
+
+            			printf("查找失败\n");
+            			break;
+
+        			}
+
+    			}
+			break;
+		
+	}
 
     int totalPrice = 0;
     for(i = 0;i < order_GoodsInOrder[count];i++){
@@ -451,6 +505,116 @@ void showOrderByUserName(userInf user[],goods good[]){
 
     }
 
+    if(count != -1){
+
+        printf("已买商品的总价为：%d\n",totalPrice);
+
+    }
+
+
+}
+
+
+void showOrderByUserName(userInf user[],goods good[],userInf newuser){
+
+    int i = 0;
+    int j = 0;
+    int count = -1;
+    int num = newuser.userPermission;
+    if(num == 3){
+    	
+    	num = 2;
+    	
+	}
+    switch(num){
+    	
+    	case 1:
+    		while(1){
+
+        	
+        	char account[20];
+        	strcpy(account,user[order_Position].userAccount); 
+        	
+        	fflush(stdin);
+        	
+       		 char password[20];
+        	strcpy(password,user[order_Position].userPassword);
+        	
+       		fflush(stdin);
+        	for(i = 0;i < order_NumOfUser ;i ++){
+
+            	if((strcmp(account,user[i].userAccount) == 0) &&(strcmp(password,user[i].userPassword)==0)){
+
+               	 count = i;
+              	  break;
+
+           	 }
+
+       		}
+
+      	  		if(count != -1){
+
+          	  	printf("查找成功\n");
+           	 	break;
+        		}
+        		else{
+
+          	  	printf("查找失败\n");
+           	 	break;
+
+        		}
+
+   	 		}
+   	 	break;
+   	 	case 2:
+			while(1){
+
+        	printf("请输入该用户的账号：");
+        	char account[20];
+       
+        	scanf("%s",account);
+        	fflush(stdin);
+        	printf("请输入该用户的密码：");
+        	char password[20];
+       
+        	scanf("%s",password);
+        	fflush(stdin);
+        	for(i = 0;i < order_NumOfUser ;i ++){
+
+            	if((strcmp(account,user[i].userAccount) == 0) &&(strcmp(password,user[i].userPassword)==0)){
+
+               	 count = i;
+               	 break;
+
+            	}
+
+       		}
+
+       	 		if(count != -1){
+       	 			
+       	 			printf("查找成功\n");
+					if(order_GoodsInOrder[count] == 0){
+						
+						printf("该用户暂时未购买商品\n");
+						
+					}
+           		 	
+            		break;
+       	 		}
+        		else{
+
+            		printf("查找失败\n");
+            	break;
+
+        		}
+
+    		}	 
+    	break;
+    		
+    	
+	}
+
+
     for(i = 0;i < order_GoodsInOrder[count];i ++){
 
         printf("第%d个账单信息为：\n",i+1);
@@ -458,11 +622,7 @@ void showOrderByUserName(userInf user[],goods good[]){
         printf("购买数量为：%d\n",user[count].order[i].number);
 
     }
-    if(count != -1){
-
-        printf("已买商品的总价为：%d\n",totalPrice);
-
-    }
+    
 
 
 }
@@ -474,7 +634,8 @@ void showGoodsInfor(goods good[]){
 
         printf("第%d个商品的名称是：%s\n",i+1,good[i].name);
         printf("第%d个商品的数量是：%d\n",i+1,good[i].num);
-        printf("第%d个商品的价格是：%d\n\n",i+1,good[i].price);
+        printf("第%d个商品的价格是：%d\n",i+1,good[i].price);
+        printf("第%d个商品的生产日期是%s\n\n",i+1,good[i].date);
 
     }
 
@@ -483,13 +644,15 @@ void showGoodsInfor(goods good[]){
 
 void deleteUserAndOrder(userInf user[],goods good[]){
 
-    printf("请输入要删除的用户的账号：");
+    //printf("请输入要删除的用户的账号：");
     char account[20];
-    scanf("%s",account);
+    strcpy(account,user[order_Position].userAccount);
+   // scanf("%s",account);
     fflush(stdin);
-    printf("请输入要删除的用户的密码：");
+    //printf("请输入要删除的用户的密码：");
     char password[20];
-    scanf("%s",password);
+    strcpy(password,user[order_Position].userPassword);
+    //scanf("%s",password);
     fflush(stdin);
 
     int i = 0;
@@ -563,16 +726,23 @@ void deleteUserAndOrder(userInf user[],goods good[]){
 
 }
 
-void userFunction(userInf user[],goods good[]){
+void userFunction(userInf user[],goods good[],userInf newuser){
 
 
     int flag = 1;
     while(flag == 1){
 
-        printf("*************************              *************************\n");
-        printf("请选择操作 1：购买商品 2：删除商品 3：显示某某的商品信息 4：返回上一步   \n");
-        printf("由于没有管理员，所以设置选项 5 为添加商品，6 为显示所有商品信息 7 为删除用户\n");
-        printf("*************************              *************************\n\n");
+		printf("\t\t\t  ***********************             ************************\n");
+		printf("\t\t\t                          超市订单系统                        \n");
+		printf("\t\t\t  ************************            ************************\n");
+        printf("\t\t\t                          1：购买商品                         \n");
+        printf("\t\t\t                          2：删除商品                          \n");
+        printf("\t\t\t                          3：显示商品信息                      \n");
+        printf("\t\t\t                          4：删除你的所有信息和订单            \n");
+        printf("\t\t\t                          5：显示订单总价                      \n");
+        printf("\t\t\t                          6：为添加商品                        \n");
+        printf("\t\t\t                          7：为显示所有商品                    \n");
+        printf("\t\t\t                          8：返回上一步                        \n\n");
         printf("你的选择是：");
         int choice = 0;
         scanf("%d",&choice);
@@ -587,24 +757,28 @@ void userFunction(userInf user[],goods good[]){
                 system("PAUSE");
                 break;
             case 3:
-                showOrderByUserName(user,good);
+                showOrderByUserName(user,good,newuser);
                 system("PAUSE");
                 break;
             case 4:
-                flag = 0;
-                break;
-            case 5:
-                addGoods(good);
+                 deleteUserAndOrder(user,good);
                 system("PAUSE");
                 break;
+            case 5:
+            	CountTotalPrice(user,good,newuser);
+            	system("PAUSE");
+                break;
             case 6:
-                showGoodsInfor(good);
+                //addGoods(good);
                 system("PAUSE");
                 break;
             case 7:
-                deleteUserAndOrder(user,good);
+                showGoodsInfor(good);
                 system("PAUSE");
                 break;
+            case 8:
+            	flag = 0;
+            	break;
             default :
                 printf("输入错误，请重新输入\n");
                 break;
@@ -615,7 +789,7 @@ void userFunction(userInf user[],goods good[]){
 
 }
 
-void readFromFile(userInf user[],goods good[]){
+void readFromFile(userInf user[],goods good[],SHOP*head){
 
     //读用户信息
 
@@ -635,13 +809,32 @@ void readFromFile(userInf user[],goods good[]){
         order_NumOfUser++;
 
     }
-
-
     fclose(fp1);
-    printf("有%d个用户被读入\n",order_NumOfUser);
+    printf("原有%d个用户\n",order_NumOfUser);
 
+
+	SHOP*p;
+	p = (SHOP*)malloc(sizeof(SHOP));
+	if(head == NULL){
+		
+		printf("尚未录入商品信息！\n");
+
+		
+	}
+	p = head;
+	while(p != NULL){
+		
+		strcpy(good[order_NumOfProduct].name,p->ID);
+		good[order_NumOfProduct].price = atoi(p->price);
+		good[order_NumOfProduct].num = p->amount;
+		strcpy(good[order_NumOfProduct].date,p->date);
+		order_NumOfProduct++;
+		p = p->next;
+		
+	}
+	printf("读入%d个商品信息\n",order_NumOfProduct);
     //读订单信息
-    FILE *fp2 = fopen("goods.txt", "r");
+    /*FILE *fp2 = fopen("goods.txt", "r");
     if(fp2 == NULL)
     {
         printf("打开文件错误\n");
@@ -652,7 +845,7 @@ void readFromFile(userInf user[],goods good[]){
 
         /* printf("%s\n\n",good[numOfProduct].name);
          printf("%d\n\n",good[numOfProduct].price);
-         printf("%d\n\n",good[numOfProduct].num);*/
+         printf("%d\n\n",good[numOfProduct].num);
 
 
         order_NumOfProduct++;
@@ -660,7 +853,7 @@ void readFromFile(userInf user[],goods good[]){
     }
 
     fclose(fp2);
-    printf("有%d个商品被读入\n",order_NumOfProduct);
+    printf("原有%d个商品\n",order_NumOfProduct);*/
 
     FILE *fp3 = fopen("order.txt","r");
     if(fp3==NULL){
@@ -691,73 +884,12 @@ void readFromFile(userInf user[],goods good[]){
 
 }
 
-void OrderMenu(userInf loginUser){
+void OrderMenu(userInf loginUser,SHOP*head){
 
-    int flag = 1;
-    int userflag = 0;
     userInf user[20];
     goods good[30];
-    readFromFile(user,good);
-    while(flag == 1){
-
-
-        printf("***************             ****************\n");
-        printf("              欢迎进入超市系统             \n");
-        printf("	  请选择 1：登录 2：注册 3：退出系统       \n");
-        printf("***************             ****************\n\n");
-        printf("你的选择是：");
-        int choice;
-        scanf("%d",&choice);
-        switch(choice){
-
-            case 1:
-                userflag = userLoad(user);
-                break;
-            case 2:
-                userRegister(user);
-                break;
-            case 3:
-                flag = 0;
-                break;
-            default :
-                printf("输入错误，请重新输入\n");
-                break;
-
-
-        }
-
-        if(choice == 1){
-
-            if(userflag == 1){
-
-                printf("恭喜你登陆成功\n");
-                userFunction(user,good);
-
-            }
-            else{
-
-                printf("登陆失败，请重新选择操作\n");
-            }
-
-        }
-
-        if(choice == 2){
-
-            userflag = userLoad(user);
-            if(userflag == 1){
-
-                printf("恭喜你登陆成功\n");
-                userFunction(user,good);
-
-            }
-            else{
-
-                printf("登陆失败，请重新选择操作\n");
-            }
-
-        }
-
-
-    }
+    readFromFile(user,good,head); //读取用户和商品信息 
+    addUser(user,loginUser); //增加用户 
+    userFunction(user,good,loginUser); //使用功能 
 
 }

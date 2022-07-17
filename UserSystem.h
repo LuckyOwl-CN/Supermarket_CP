@@ -4,6 +4,7 @@
 #endif
 
 #include "LinkList.h"
+#include <windows.h>
 
 void UserMenu();
 userInf UserLogin();

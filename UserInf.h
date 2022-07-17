@@ -27,5 +27,7 @@ typedef struct
     char name[20];
     int price;
     int num;
+    char date[10];
+    
 
 }goods;
